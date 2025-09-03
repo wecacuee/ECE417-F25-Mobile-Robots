@@ -1,7 +1,7 @@
 # ECE 417/517 Mobile Robots
 
-Welcome to the class. In this class, we will learn about how to work with
-Mobile Robots.
+Welcome to the class. In this class, we will learn about how to write
+algorithms for Mobile Robots.
 
 ## Instructor
 

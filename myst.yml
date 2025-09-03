@@ -16,6 +16,8 @@ project:
   toc:
     - file: intro.md
       title: Mobile Robots
+    - file: chapters/00-intro/01-19-intro-to-robotics.md
+      title: What is a Robot?
     - file: hw/00-prereq/0000-00-02-prereq-hw.md
       title: Pre-requisite Review
     - file: chapters/01-py-intro/Python_1.ipynb
