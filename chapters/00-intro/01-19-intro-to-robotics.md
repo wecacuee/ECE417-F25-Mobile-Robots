@@ -63,15 +63,18 @@
   + Coordinate tranformation
   + Rigid body motions
   + Forward and inverse kinematics
+- Software and Hardware
+  + Robot Operating System (ROS) <https://ros.org>
+  + NVIDIA Jetbot <https://jetbot.org>
+- Control
+  + LQR
+  + PID Control
+  + Reinforcement learning
 - State estimation (Mapping/localization)
   + Camera model
   + Structure from motion
   + Localization
   + EKF SLAM
-- Control
-  + LQR
-  + PID Control
-  + Reinforcement learning
 
 ## Are robots good?
 
