@@ -1,0 +1,33 @@
+version: 1
+
+project:
+  jupyter: true
+  title: Mobile Robots
+  authors: 
+    - name: Vikas Dhiman
+  github:
+    wecacuee/ECE417-F25-Mobile-Robots
+  bibliography:
+    - references.bib
+  exports:
+    - format: pdf
+      template: plain_latex_book
+      output: _build/book.pdf
+  toc:
+    - file: intro.md
+      title: Mobile Robots
+    - file: hw/00-prereq/0000-00-02-prereq-hw.md
+      title: Pre-requisite Review
+    - file: chapters/01-py-intro/Python_1.ipynb
+      children:
+        - file: chapters/01-py-intro/Python_2.ipynb
+        - file: chapters/01-py-intro/Python_3.ipynb
+extends:
+  - ./sym.yml
+
+
+site:
+  options:
+    logo: images/jetbot.jpg
+    folders: true
+  template: book-theme
