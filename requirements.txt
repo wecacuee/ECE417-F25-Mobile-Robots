@@ -5,3 +5,4 @@ jupyterlab_myst
 jupyterlab
 plotly
 mystmd
+otter-grader
