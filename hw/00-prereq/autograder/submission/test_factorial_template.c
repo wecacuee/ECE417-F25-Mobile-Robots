@@ -13,7 +13,7 @@ long factorial(short n);
 bool test_factorial() {
     short n = randint(0, 25);
     if ((n == 0 && factorial(n) != 1)
-	|| factorial(n) != n*factorial(n-1)) {
+        || (n >= 1 && factorial(n) != n*factorial(n-1))) {
         fprintf(stderr, "Fail for factorial(%d)\n", n);
         return false;
     } else
