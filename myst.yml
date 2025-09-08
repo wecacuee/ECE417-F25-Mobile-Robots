@@ -24,6 +24,7 @@ project:
       children:
         - file: chapters/01-py-intro/Python_2.ipynb
         - file: chapters/01-py-intro/Python_3.ipynb
+    - file: chapters/01-1901-discrete-planning/Discrete Planning.ipynb
 extends:
   - ./sym.yml
 
