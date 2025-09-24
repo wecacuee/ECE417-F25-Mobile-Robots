@@ -97,7 +97,7 @@ Next you'll need to connect to WiFi. To reduce memory consumption, we disable th
 5. **Status check**  
    *Check 1:* Once medev assigns us an IP address, we should be able to connect to the internet. This can take a few minutes. You can check the ip address using ifconfig command
 
-```bash
+```shell
 jetbot@nano-4gb-jp45:~$ ifconfig wlan0
 wlan0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
 inet <red>141.114.204.99</red>  netmask 255.255.248.0  broadcast 141.114.207.255
@@ -113,7 +113,7 @@ TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 
    *Check 2:* You can check if you can connect to google.com by using ping
 
-```bash
+```shell
 jetbot@nano-4gb-jp45:~$ ping google.com
 PING google.com (142.251.40.238) 56(84) bytes of data.
 64 bytes from lga34s39-in-f14.1e100.net (142.251.40.238): icmp_seq=1 ttl=120 time=15.1 ms
@@ -127,7 +127,7 @@ Kill the process using Ctrl+C. If you are not connected to the internet, you sho
 
    *Check 3:* You should also confirm your public ip address using any website that provides such a service. One such website is ifconfig.me.
 
-```bash
+```shell
 jetbot@nano-4gb-jp45:~$ wget ifconfig.me -O - 2>/dev/null
 141.114.204.99jetbot@nano-4gb-jp45:~$
 ```
@@ -139,7 +139,7 @@ with your own jetbot's IP address.
 
 	*Check 4:* You should be able to ssh to your jetbot from your laptop:
 
-```bash
+```shell
 vdhiman@office-desktop:~$ ssh jetbot@141.114.204.99
 The authenticity of host '141.114.204.99 (141.114.204.99)' can't be established.
 ECDSA key fingerprint is SHA256:IoAgrDFGF+o1CyU+12i4N6FZgUPrW/ZvPFnY24kUKQ4.
@@ -197,20 +197,20 @@ Now that you're finished setting up your JetBot, you're ready to run the [exampl
 
 The sdcard image is much smaller than your sdcard full size. Let’s fix that. First on the your laptop let’s ssh to jetbot. Replace \<jetbot\_ip\_address\> with the IP address of the Jetbot displayed on OLED display.
 
-```bash
+```shell
 ece417@laptop:~$ ssh jetbot@<jetbot_ip_address>
 ```
 
 Install cloud-guest-utils on jetbot
 
-```bash
+```shell
 jetbot@nano-4gb-jp45:~$ sudo apt update
 jetbot@nano-4gb-jp45:~$ sudo apt install cloud-guest-utils
 ```
 
 1. List the bulk storage devices
 
-```bash
+```shell
 jetbot@nano-4gb-jp45:~$ lsblk
 NAME         MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
 loop0          7:0    0    16M  1 loop
@@ -234,7 +234,7 @@ mmcblk0      179:0    0 119.1G  0 disk
 
 2. Looks like mmcblk0 is the device that is our SD Card. List the partition number for /dev/mmcblk0
 
-```bash
+```shell
 jetbot@nano-4gb-jp45:~$ sudo parted /dev/mmcblk0 print
 Model: SD SN128 (sd/mmc)
 Disk /dev/mmcblk0: 128GB
@@ -260,14 +260,14 @@ Number  Start   End     Size    File system  Name     Flags
 
 3. Partition 1 contains 26.2GB of space. Grow the partition 1 on /dev/mmcblk0 to take up the full space. growpart is one of the utility to extend the last partition of the disk to fill the available free space on the disk. It changes the sector position to the end sector of the disk.
 
-```bash
+```shell
 jetbot@nano-4gb-jp45:~$ sudo growpart /dev/mmcblk0 1
 CHANGED: partition=1 start=28672 old: size=51200000 end=51228672 new: size=249708511,end=249737183
 ```
 
 4. Does parted show the change 
 
-```bash
+```shell
 jetbot@nano-4gb-jp45:~$ sudo parted /dev/mmcblk0 print
 Model: SD SN128 (sd/mmc)
 Disk /dev/mmcblk0: 128GB
@@ -293,7 +293,7 @@ Number  Start   End     Size    File system  Name     Flags
 
 5. Partition table and filesystem are different things. Resize the filesystem to match the partition table for partition 1 on /devmmcblk0 . The `resize2fs` program will resize ext2, ext3, or ext4 file systems. If the filesystem is mounted, it can be used to expand the size of the mounted filesystem, assuming the kernel supports on-line resizing.
 
-```bash
+```shell
 jetbot@nano-4gb-jp45:~$ sudo resize2fs /dev/mmcblk0p1
 resize2fs 1.44.1 (24-Mar-2018)
 Filesystem at /dev/mmcblk0p1 is mounted on /; on-line resizing required
@@ -303,15 +303,18 @@ The filesystem on /dev/mmcblk0p1 is now 31213563 (4k) blocks long.
 
 6. Make sure that `df -h .`  shows you the expected size of the sdcard. Two related commands that every system administrator runs frequently are df and du. “While du reports files' and directories' disk usage, df reports how much disk space your filesystem is using. The df command displays the amount of disk space available on the filesystem with each file name's argument.”[^1]
 
-```bash
+```shell
 jetbot@nano-4gb-jp45:~$ df -h .                                                      Filesystem      Size  Used Avail Use% Mounted on                                     /dev/mmcblk0p1  118G   22G   91G  20% /   
 ```
 
 ## Step 7: Get ROS humble on jetbot 
 
-We will not install ROS using our usual process because the ubuntu in Jetpack is 18.04 while we need 22.04 for ROS humble. We will solve this problem by using docker which is like a lightweight virtual machine but unlike a virtual machine it uses the same kernel. In fact, in simple cases of docker, the only thing that differs between the host and the guest is the filesystem (the files that you see when you inside docker).
+We will not install ROS using our usual process because the ubuntu in Jetpack is 18.04 while we need 22.04 for ROS humble. We will solve this problem by using [docker which is like a lightweight virtual machine](https://docs.docker.com/get-started) but unlike a virtual machine it uses the same kernel. In fact, in simple cases of docker, the only thing that differs between the host and the guest is the filesystem (the files that you see when you inside docker).
 
-```bash
+Please read and understand [docker concepts](https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-a-container/) like container, image, registry
+etc.
+
+```shell
 jetbot@nano-4gb-jp45:~$ sudo docker pull vdhiman86/ros:humble-pytorch-l4t-r32.7.1
 ..
 Status: Downloaded newer image for vdhiman86/ros:humble-desktop-l4t-r32.7.1            docker.io/vdhiman86/ros:humble-desktop-l4t-r32.7.1 
@@ -319,7 +322,7 @@ Status: Downloaded newer image for vdhiman86/ros:humble-desktop-l4t-r32.7.1     
 
 Once it is downloaded you can run the docker ***image*** to create a running ***container***. Find out about these concepts in a docker tutorial
 
-```bash
+```shell
 jetbot@nano-4gb-jp45:~$ sudo docker run --name ros-talker --network host -v /home/jetbot:/home/jetbot -v /etc/passwd:/etc/passwd -v /etc/shadow:/etc/shadow -v /etc/group:/etc/group -u $(id -u) --workdir /home/jetbot -it vdhiman86/ros:humble-desktop-l4t-r32.7.1 bash              
 sourcing   /opt/ros/humble/install/setup.bash                                        ROS_DISTRO humble                                                                    ROS_ROOT   /opt/ros/humble                                                           jetbot@nano-4gb-jp45:/$ 
 ```
@@ -348,19 +351,19 @@ Here’s a description of each option
 
 If you exit the container using `CTRL-D` , then container stops and you can rerun the same container using
 
-```bash
+```shell
 jetbot@nano-4gb-jp45:~/ece417$ sudo docker container start -i ros-talkera
 sourcing   /opt/ros/humble/install/setup.bash
 ROS_DISTRO humble
 ROS_ROOT   /opt/ros/humble
-jetbot@nano-4gb-jp45:~$
+jetbot@nano-4gb-jp45:~/ece417$
 ```
 
 If you exit the container using `CTRL-P CTRL-Q`, then container keeps running in the background and you can attach again to the same container session using 
 
-```bash
+```shell
 jetbot@nano-4gb-jp45:~/ece417$ sudo docker container attach ros-talker
-jetbot@nano-4gb-jp45:~$
+jetbot@nano-4gb-jp45:~/ece417$
 ```
 
 [^1]:  [https://www.redhat.com/sysadmin/Linux-df-command](https://www.redhat.com/sysadmin/Linux-df-command) 

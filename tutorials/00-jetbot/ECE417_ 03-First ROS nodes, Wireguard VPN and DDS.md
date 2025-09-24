@@ -5,42 +5,57 @@
 
 1. In windows command line type the following command to set the WSL version to 2\.
 
-| wsl \--set-default-version 2 |
-| :---- |
+```shell
+wsl --set-default-version 2
+```
 
 2. List all the linux distributions available online for install through wsl
 
-| wsl \--list \--online |
-| :---- |
+```shell
+wsl --list --online
+```
 
 3. We will install 2022 version of Ubuntu 22.04
 
-| wsl \--install \-d Ubuntu-22.04 |
-| :---- |
+```shell
+wsl --install -d Ubuntu-22.04
+```
 
 4. Make sure it is wsl2 by typing 
 
-| wsl \--set-default-version 2 \-d Ubuntu-22.04 |
-| :---- |
+```shell
+wsl --set-default-version 2 -d Ubuntu-22.04
+```
 
 5. Start Ubuntu by typing
 
-| wsl \-d Ubuntu-22.04 |
-| :---- |
+```shell
+wsl -d Ubuntu-22.04
+```
 
    
 
 ## Understanding Data Distribution Service and Discovery 
 
-![][image1]  
-We are using ~~eProsima Fast DDS 2.1.4.~~ Documentation [here](https://fast-dds.docs.eprosima.com/en/v2.11.2/fastdds/getting_started/getting_started.html). We are using Eclipse Cyclone DDS 0.7.0 with documentation here. 
+![](imgs/user-ros-dds-layers.png)
+
+We are using [Eclipse Cyclone DDS 0.7.0](https://github.com/eclipse-cyclonedds/cyclonedds/tree/master?tab=readme-ov-file#run-time-configuration) for DDS with description of options [here](https://github.com/eclipse-cyclonedds/cyclonedds/blob/master/docs/manual/options.md).
 
 When you are deploying robots, it is better for them to be together on the same subnetwork. DDS can find robots using “simple discovery” when they are on the same subnetwork. Since our robot and laptop are on a separate subnetwork.
 
 [Subnetwork](https://en.wikipedia.org/wiki/Subnet) : A **subnetwork** or **subnet** is a logical subdivision of an IP network. 
 
-| laptop:\~/ece417$ ifconfig wlan0 wlan0: flags=4163\<UP,BROADCAST,RUNNING,MULTICAST\>  mtu 1500    	 inet 141.114.195.160  netmask 255.255.248.0  broadcast 141.114.199.255    	 inet6 fe80::f67:d239:daf9:bdf6  prefixlen 64  scopeid 0x20\<link\>    	 ether 20:0d:b0:4d:40:b5  txqueuelen 1000  (Ethernet)    	 RX packets 980  bytes 1106777 (1.1 MB)    	 RX errors 0  dropped 0  overruns 0  frame 0    	 TX packets 521  bytes 63464 (63.4 KB)    	 TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0 |
-| :---- |
+```shell
+laptop:~/ece417$ ifconfig wlan0
+wlan0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+   	 inet 141.114.195.160  netmask 255.255.248.0  broadcast 141.114.199.255
+   	 inet6 fe80::f67:d239:daf9:bdf6  prefixlen 64  scopeid 0x20<link>
+   	 ether 20:0d:b0:4d:40:b5  txqueuelen 1000  (Ethernet)
+   	 RX packets 980  bytes 1106777 (1.1 MB)
+   	 RX errors 0  dropped 0  overruns 0  frame 0
+   	 TX packets 521  bytes 63464 (63.4 KB)
+   	 TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+```
 
 A IPv4 subnet is determined by netmask which is a 32-bit binary mask over 32-bit IP address. The masked bits are fixed, the unmasked bits form the range of IP addresses in the subnet. For example, netmask for tempest Wi-Fi is 255.255.248.0 which allows for masking for all bits in IP address except the last 11 bits. All IP addresses in the range 141.114.192-200.0-256 are in the same subnet as 141.114.195.160.
 
@@ -55,28 +70,39 @@ Before following these instructions, you need to install ROS on your laptop on W
 
 ROS allows you to talk between process. A lot of talking between processes is governed by environment variables. In linux you can see all the environment variables and their values by running 
 
-| laptop:\~/ece417$ printenv … |
-| :---- |
+```shell
+laptop:~/ece417$ printenv
+```
 
 The problem with printenv is that it prints all environment variables, and there are a lot of them. Linux allows you to filter out a command output by using \`| grep \<filterwords\>\`. We want to see environment variables that contain the word ROS
 
-| laptop:\~/ece417$ printenv | grep ROS laptop:\~/ece417$ |
-| :---- |
+```shell
+laptop:~/ece417$ printenv | grep ROS 
+laptop:~/ece417$
+```
 
 By default, there is no environment variable regarding ROS. We can source environment files that initialize ROS related environment variables.
 
-| laptop:\~/ece417$ source /opt/ros/humble/setup.bash |
-| :---- |
+```shell
+laptop:~/ece417$ source /opt/ros/humble/setup.bash
+```
 
 Now check environment variables with the word ROS again, you should see the following. 
 
-| laptop:\~/ece417$ printenv | grep ROS ROS\_VERSION=2 ROS\_PYTHON\_VERSION=3 ROS\_LOCALHOST\_ONLY=0 ROS\_DISTRO=humble |
-| :---- |
+```shell
+laptop:~/ece417$ printenv | grep ROS
+ROS_VERSION=2 
+ROS_PYTHON_VERSION=3
+ROS_LOCALHOST_ONLY=0
+ROS_DISTRO=humble
+```
 
 Each environment variable can be modified, and it communicates with all the processes that you will run later on. For example, you can access environment variables inside python as:
 
-| laptop:\~/ece417$ python3 \-c 'import os; print(os.getenv("ROS\_DISTRO"))' humble |
-| :---- |
+```shell
+laptop:~/ece417$ python3 -c 'import os; print(os.getenv("ROS_DISTRO"))' 
+humble
+```
 
 You have to run source /opt/ros/humble/setup.bash in every terminal once before you use any ros command. You can also add it your \~/.bashrc which contains all the commands that are run at the beginning of every shell session. 
 
@@ -84,8 +110,9 @@ You have to run source /opt/ros/humble/setup.bash in every terminal once before 
 
 Ros nodes are run using \`ros2 run\` command. It takes two arguments, first is the ROS package name. And second is the executable in the package, in the format \`ros2 run \<packagename\> \<executable\>\`.
 
-| laptop:\~/ece417$ ros2 run demo\_nodes\_py listener |
-| :---- |
+```shell
+laptop:~/ece417$ ros2 run demo_nodes_py listener
+```
 
 Here we run the listener executable from the demo\_nodes\_py package. Let it run in this terminal. Open a new terminal for the next steps.
 
@@ -93,8 +120,9 @@ Here we run the listener executable from the demo\_nodes\_py package. Let it run
 
 Open a new terminal and run source /opt/ros/humble/setup.bash again, unless you have added it your  \~/.bashrc . You can list all the running nodes with 
 
-| laptop:\~/ece417$ ros2 node list /listener |
-| :---- |
+```shell
+laptop:~/ece417$ ros2 node list /listener
+```
 
 Here /listener is the node name. All names in ROS can form a hierarchy which starts with a forward slash \`/\`. Valid node names can be \`/listeners/student1\`
 
@@ -102,13 +130,26 @@ Here /listener is the node name. All names in ROS can form a hierarchy which sta
 
 Run the talker node in the package name demo\_nodes\_py using the same template as “Run your first node section.”
 
-| laptop:\~/ece417$ \# What command should you run to a node talker in package demo\_nodes\_py \[INFO\] \[1695169878.688667829\] \[talker\]: Publishing: "Hello World: 0" \[INFO\] \[1695169879.668149723\] \[talker\]: Publishing: "Hello World: 1" \[INFO\] \[1695169880.668166943\] \[talker\]: Publishing: "Hello World: 2" \[INFO\] \[1695169881.668083244\] \[talker\]: Publishing: "Hello World: 3 |
-| :---- |
+```shell
+laptop:~/ece417$ # What command should you run to a node talker in package demo_nodes_py
+[INFO] [1695169878.688667829] [talker]: Publishing: "Hello World: 0"
+[INFO] [1695169879.668149723] [talker]: Publishing: "Hello World: 1"
+[INFO] [1695169880.668166943] [talker]: Publishing: "Hello World: 2"
+[INFO] [1695169881.668083244] [talker]: Publishing: "Hello World: 3
+```
 
 Switch to the listener terminal and you should see the listener receiving the messages.
 
-| laptop:\~/ece417$ ros2 run demo\_nodes\_py listener \[INFO\] \[1695169971.080665762\] \[listener\]: I heard: \[Hello World: 0\] \[INFO\] \[1695169972.049128144\] \[listener\]: I heard: \[Hello World: 1\] \[INFO\] \[1695169973.048824633\] \[listener\]: I heard: \[Hello World: 2\] \[INFO\] \[1695169974.049025512\] \[listener\]: I heard: \[Hello World: 3\] \[INFO\] \[1695169975.048981828\] \[listener\]: I heard: \[Hello World: 4\] \[INFO\] \[1695169976.049040151\] \[listener\]: I heard: \[Hello World: 5\] \[INFO\] \[1695169977.049155199\] \[listener\]: I heard: \[Hello World: 6\] |
-| :---- |
+```shell
+laptop:~/ece417$ ros2 run demo_nodes_py listener
+[INFO] [1695169971.080665762] [listener]: I heard: [Hello World: 0]
+[INFO] [1695169972.049128144] [listener]: I heard: [Hello World: 1]
+[INFO] [1695169973.048824633] [listener]: I heard: [Hello World: 2]
+[INFO] [1695169974.049025512] [listener]: I heard: [Hello World: 3]
+[INFO] [1695169975.048981828] [listener]: I heard: [Hello World: 4]
+[INFO] [1695169976.049040151] [listener]: I heard: [Hello World: 5]
+[INFO] [1695169977.049155199] [listener]: I heard: [Hello World: 6]
+```
 
 Let the two terminals talk to each other while we inspect what is going on in a new terminal.
 
@@ -116,48 +157,94 @@ Let the two terminals talk to each other while we inspect what is going on in a 
 
 Source the ROS environment in the new terminal. What nodes are running. List the nodes that are running from “Inspect what nodes are running section.”
 
-| laptop:\~/ece417$ \# What command sources the environment variables and you have to run everytime laptop:\~/ece417$ \# What command lists all the running nodes /listener /talker |
-| :---- |
+```shell
+laptop:~/ece417$ # What command sources the environment variables and you have to run everytime
+laptop:~/ece417$ # What command lists all the running nodes
+/listener
+/talker
+```
 
 You can also visualize a graph of all the nodes using 
 
-| laptop:\~/ece417$ rqt\_graph |
-| :---- |
+```shell
+laptop:~/ece417$ rqt_graph
+```
 
-![][image2]
+![](imgs/rqt.png)
 
 Sometimes you might have to stop and start the ros2 daemon to make this work.
 
-| laptop:\~/ece417$ ros2 daemon stop laptop:\~/ece417$ ros2 daemon start |
-| :---- |
+```shell
+laptop:~/ece417$ ros2 daemon stop 
+laptop:~/ece417$ ros2 daemon start
+```
 
 6. ##### List all the topic 
 
 Similar to listing all the nodes, you can also list all the topics (metaphors: telephone line/channels/information pipelines between nodes).
 
-| laptop:\~/ece417$ ros2 topic list /chatter /parameter\_events /rosout |
-| :---- |
+```shell
+laptop:~/ece417$ ros2 topic list
+/chatter /parameter_events /rosout
+```
 
 Here /chatter is the name of the topic on which /talker and /listener are chatting. You can get more information about the topic using ros2 topic info
 
-| laptop:\~/ece417$ ros2 topic info /chatter Type: std\_msgs/msg/String Publisher count: 1 Subscription count: 1 |
-| :---- |
+```shell
+laptop:~/ece417$ ros2 topic info /chatter Type: std\_msgs/msg/String Publisher count: 1 Subscription count: 1
+```
 
 You can see what else \`ros2 topic\` has to offer by asking for help
 
-| laptop:\~/ece417$ ros2 topic \-h usage: ros2 topic \[-h\] \[--include-hidden-topics\]               	Call \`ros2 topic \<command\> \-h\` for more detailed usage. ... Various topic related sub-commands optional arguments:   \-h, \--help        	show this help message and exit   \--include-hidden-topics                     	Consider hidden topics as well Commands:   bw 	Display bandwidth used by topic   delay  Display delay of topic from timestamp in header   echo   Output messages from a topic   find   Output a list of available topics of a given type   hz 	Print the average publishing rate to screen   info   Print information about a topic   list   Output a list of available topics   pub	Publish a message to a topic   type   Print a topic's type   Call \`ros2 topic \<command\> \-h\` for more detailed usage. |
-| :---- |
+```shell
 
-Try out a few of these 
+laptop:~/ece417$ ros2 topic -h
+usage: ros2 topic [-h] [--include-hidden-topics]
+              	Call `ros2 topic <command> -h` for more detailed usage. ...
 
-| laptop:\~/ece417$ ros2 topic hz /chatter average rate: 1.000     	min: 1.000s max: 1.000s std dev: 0.00025s window: 2  |
-| :---- |
+Various topic related sub-commands
 
-| laptop:\~/ece417$ ros2 topic echo /chatter data: 'Hello World: 496' \--- data: 'Hello World: 497' \--- data: 'Hello World: 417' |
-| :---- |
+optional arguments:
+  -h, --help        	show this help message and exit
+  --include-hidden-topics
+                    	Consider hidden topics as well
 
-| laptop:\~/ece417$ ros2 topic bw /chatter Subscribed to \[/chatter\] 35 B/s from 2 messages     	Message size mean: 28 B min: 28 B max: 28 B 32 B/s from 3 messages     	Message size mean: 28 B min: 28 B max: 28 B |
-| :---- |
+Commands:
+  bw 	Display bandwidth used by topic
+  delay  Display delay of topic from timestamp in header
+  echo   Output messages from a topic
+  find   Output a list of available topics of a given type
+  hz 	Print the average publishing rate to screen
+  info   Print information about a topic
+  list   Output a list of available topics
+  pub	Publish a message to a topic
+  type   Print a topic's type
+```
+
+Try out a few of these
+
+```shell
+laptop:~/ece417$ ros2 topic hz /chatter
+average rate: 1.000     	min: 1.000s max: 1.000s std dev: 0.00025s window: 2 
+```
+
+```shell
+laptop:~/ece417$ ros2 topic echo /chatter
+data: 'Hello World: 496' 
+---
+data: 'Hello World: 497' 
+---
+data: 'Hello World: 417'
+```
+
+```shell
+laptop:~/ece417$ ros2 topic bw /chatter
+Subscribed to [/chatter]
+35 B/s from 2 messages
+    	Message size mean: 28 B min: 28 B max: 28 B
+32 B/s from 3 messages
+    	Message size mean: 28 B min: 28 B max: 28 B
+```
 
 7. ##### Configure Wireguard VPN tunnel 
 
@@ -185,38 +272,88 @@ Please [watch this excellent video](https://www.youtube.com/watch?v=YEBfamv-_do)
 
 Install wireguard on both laptop and jetbot. Also create a directory \~/.config/wg/
 
-| laptop:\~/ece417$ sudo apt update laptop:\~/ece417$ sudo apt install wireguard |
-| :---- |
+```shell
+laptop:~/ece417$ sudo apt update
+laptop:~/ece417$ sudo apt install wireguard
+```
 
 Same on the jetbot:
 
-| jetbot@nano-4gb-jp45:\~$ sudo apt update jetbot@nano-4gb-jp45:\~$ sudo apt install wireguard |
-| :---- |
+```shell
+jetbot@nano-4gb-jp45:~$ sudo apt update 
+jetbot@nano-4gb-jp45:~$ sudo apt install wireguard
+```
 
 Create wireguard private keys for both laptop and jetbot.
 
-| laptop:\~/ece417$ mkdir \-p \~/.config/wg laptop:\~/ece417$ cd \~/.config/wg laptop:\~/.config/wg$ wg genkey \> private.key laptop:\~/.config/wg$ chmod 0660 private.key |
-| :---- |
+```shell
+laptop:~/ece417$ mkdir -p ~/.config/wg
+laptop:~/ece417$ cd ~/.config/wg
+laptop:~/.config/wg$ wg genkey > private.key
+laptop:~/.config/wg$ chmod 0660 private.key
+laptop:~/.config/wg$ cat private.key
+<this will print laptop_wireguard_privatekey>
+```
 
-Repeat the same on the jetbot.  
-Create a file \~/.config/wg/wg0.conf on the laptop with the following contents:
+Create wireguard private keys on jetbot
 
-| \[Interface\] Address \= 10.0.0.3/24 PrivateKey \= \<laptop\_wireguard\_privatekey\>  \[Peer\] PublicKey \= \<jetbot\_wireguard\_publickey\> AllowedIPs \= 10.0.0.2/32 PersistentKeepalive \= 25 Endpoint \= \<jetbot\_ip\_addres\>:51820 |
-| :---- |
+```shell
+jetbot@nano-4gb-jp45:~/ece417$ mkdir -p ~/.config/wg
+jetbot@nano-4gb-jp45:~/ece417$ cd ~/.config/wg
+jetbot@nano-4gb-jp45:~/.config/wg$ wg genkey > private.key
+jetbot@nano-4gb-jp45:~/.config/wg$ chmod 0660 private.key
+jetbot@nano-4gb-jp45:~/.config/wg$ cat private.key
+<this will print jetbot_wireguard_privatekey>
+```
 
-In the file above, replace \<laptop\_wireguard\_privatekey\> with the contents of \~/.config/wg/private.key on the laptop.  
-To get jetbot’s public key, run the following on the jetbot in the \~/.config/wg directory
+To get jetbot’s public key, run the following on the jetbot in the `~/.config/wg` directory
 
-| jetbot@nano-4gb-jp45:\~/.config/wg$ wg pubkey \< private.key tQ39QO5530z2tv73dzVQXVfFbKEEKn1l/lpFXK4aW3w= |
-| :---- |
+```shell
+jetbot@nano-4gb-jp45:~/.config/wg$ wg pubkey < private.key
+<this will print jetbot_wireguard_publickey>
+```
 
 Replace \<jetbot\_wireguard\_publickey\> with the output of the above command.  
 Replace \<jetbot\_ip\_address\> with the IP address of jetbot as seen on the OLED display.
 
+Create a file `~/.config/wg/wg0.conf` on the laptop with the following contents:
+
+:::{code} ini
+:filename: laptop:~/.config/wg/wg0.conf
+[Interface]
+Address = 10.0.0.3/24
+PrivateKey = <laptop_wireguard_privatekey>
+
+
+[Peer]
+PublicKey = <jetbot_wireguard_publickey>
+AllowedIPs = 10.0.0.2/32
+PersistentKeepalive = 25
+Endpoint = <jetbot_ip_addres>:51820
+:::
+
 Create a symmetrical file on the jetbot but with minor differences:
 
-| \[Interface\] Address \= 10.0.0.2/24 PrivateKey \= \<jetbot\_wireguard\_privatekey\> ListenPort \= 51820  \[Peer\] PublicKey \= \<laptop\_wireguard\_publickey\> AllowedIPs \= 10.0.0.3/32 PersistentKeepalive \= 25 |
-| :---- |
+```shell
+laptop:~/.config/wg$ wg pubkey < private.key
+<this will print laptop_wireguard_publickey>
+```
+
+Repeat the same on the jetbot.
+
+:::{code} ini
+:filename: jetbot@nano-4gb-jp45:~/.config/wg/wg0.conf
+
+[Interface]
+Address = 10.0.0.2/24
+PrivateKey = <jetbot_wireguard_privatekey>
+ListenPort = 51820
+
+[Peer]
+PublicKey = <laptop_wireguard_publickey>
+AllowedIPs = 10.0.0.3/32
+PersistentKeepalive = 25
+:::
 
 Note the additional `ListenPort =` line and the absence of the `Endpoint =` line.  
 Explanations:
@@ -229,57 +366,114 @@ Explanations:
 
 Bring up the wireguard on the laptop
 
-| laptop:\~/.config/wg$ chmod 0660 wg0.conf laptop:\~/.config/wg$ sudo wg-quick up ./wg0.conf \[\#\] ip link add wg0 type wireguard \[\#\] wg setconf wg0 /dev/fd/63 \[\#\] ip \-4 address add 10.0.0.3/24 dev wg0 \[\#\] ip link set mtu 1420 up dev wg0 |
-| :---- |
+```shell
+laptop:~/.config/wg$ chmod 0660 wg0.conf
+laptop:~/.config/wg$ sudo wg-quick up ./wg0.conf
+[#] ip link add wg0 type wireguard
+[#] wg setconf wg0 /dev/fd/63
+[#] ip -4 address add 10.0.0.3/24 dev wg0
+[#] ip link set mtu 1420 up dev wg0
+```
 
 You should see an additional interface in the output of ifconfig command
 
-| laptop:\~/.config/wg$ ifconfig … wg0: flags=209\<UP,POINTOPOINT,RUNNING,NOARP\>  mtu 1420     	inet 10.0.0.3  netmask 255.255.255.0  destination 10.0.0.3     	unspec 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00  txqueuelen 1000  (UNSPEC)     	RX packets 1  bytes 92 (92.0 B)     	RX errors 0  dropped 0  overruns 0  frame 0     	TX packets 3  bytes 212 (212.0 B)     	TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0 |
-| :---- |
+```shell
+laptop:~/.config/wg$ ifconfig
+…
+wg0: flags=209<UP,POINTOPOINT,RUNNING,NOARP>  mtu 1420
+    	inet 10.0.0.3  netmask 255.255.255.0  destination 10.0.0.3
+    	unspec 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00  txqueuelen 1000  (UNSPEC)
+    	RX packets 1  bytes 92 (92.0 B)
+    	RX errors 0  dropped 0  overruns 0  frame 0
+    	TX packets 3  bytes 212 (212.0 B)
+    	TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+```
 
 Check the status of wireguard with wg show
 
-| laptop:\~/.config/wg$ sudo wg show interface: wg0   public key: tQ39QO5530z2tv73dzVQXVfFbKEEKn1l/lpFXK4aW3w=   private key: (hidden)   listening port: 51820 peer: G4Y7wwnJhrQUqafFC7PXp1C1NqADQNcp0dwRBYrp0DI=   endpoint: 141.114.195.160:51820   allowed ips: 10.0.0.2/32   persistent keepalive: every 25 seconds |
-| :---- |
+```shell
+laptop:~/.config/wg$ sudo wg show
+interface: wg0
+  public key: tQ39QO5530z2tv73dzVQXVfFbKEEKn1l/lpFXK4aW3w=
+  private key: (hidden)
+  listening port: 51820
+
+peer: G4Y7wwnJhrQUqafFC7PXp1C1NqADQNcp0dwRBYrp0DI=
+  endpoint: 141.114.195.160:51820
+  allowed ips: 10.0.0.2/32
+  persistent keepalive: every 25 seconds
+```
 
 Repeat the same commands on jetbot
 
-| jetbot@nano-4gb-jp45:\~/.config/wg$ chmod 0660 wg0.conf jetbot@nano-4gb-jp45:\~/.config/wg$ sudo wg-quick up ./wg0.conf \[\#\] ip link add wg0 type wireguard \[\#\] wg setconf wg0 /dev/fd/63 \[\#\] ip \-4 address add 10.0.0.2/24 dev wg0 \[\#\] ip link set mtu 1420 up dev wg0 jetbot@nano-4gb-jp45:\~/.config/wg$ sudo wg show interface: wg0   public key: G4Y7wwnJhrQUqafFC7PXp1C1NqADQNcp0dwRBYrp0DI=   private key: (hidden)   listening port: 51820 peer: tQ39QO5530z2tv73dzVQXVfFbKEEKn1l/lpFXK4aW3w=   endpoint: 130.111.219.79:51820   allowed ips: 10.0.0.3/32   latest handshake: 1 minute, 17 seconds ago   transfer: 212 B received, 156 B sent   persistent keepalive: every 25 seconds |
-| :---- |
+```
+jetbot@nano-4gb-jp45:~/.config/wg$ chmod 0660 wg0.conf
+jetbot@nano-4gb-jp45:~/.config/wg$ sudo wg-quick up ./wg0.conf
+[#] ip link add wg0 type wireguard
+[#] wg setconf wg0 /dev/fd/63
+[#] ip -4 address add 10.0.0.2/24 dev wg0
+[#] ip link set mtu 1420 up dev wg0
+jetbot@nano-4gb-jp45:~/.config/wg$ sudo wg show
+interface: wg0
+  public key: G4Y7wwnJhrQUqafFC7PXp1C1NqADQNcp0dwRBYrp0DI=
+  private key: (hidden)
+  listening port: 51820
+
+peer: tQ39QO5530z2tv73dzVQXVfFbKEEKn1l/lpFXK4aW3w=
+  endpoint: 130.111.219.79:51820
+  allowed ips: 10.0.0.3/32
+  latest handshake: 1 minute, 17 seconds ago
+  transfer: 212 B received, 156 B sent
+  persistent keepalive: every 25 seconds
+```
 
 If everything went right, then you should be able to access jetbot via 10.0.0.2 and laptop via 10.0.0.3. From the laptop try 
 
-| laptop:\~/.config/wg$ ping 10.0.0.2 PING 10.0.0.2 (10.0.0.2) 56(84) bytes of data. 64 bytes from 10.0.0.2: icmp\_seq=1 ttl=64 time=2.06 ms 64 bytes from 10.0.0.2: icmp\_seq=2 ttl=64 time=2.10 ms |
-| :---- |
+```shell
+laptop:~/.config/wg$ ping 10.0.0.2
+PING 10.0.0.2 (10.0.0.2) 56(84) bytes of data.
+64 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=2.06 ms
+64 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=2.10 ms
+```
 
 From the jetbot try
 
-| laptop:\~/.config/wg$ ping 10.0.0.3 PING 10.0.0.2 (10.0.0.2) 56(84) bytes of data. 64 bytes from 10.0.0.3: icmp\_seq=1 ttl=64 time=2.06 ms 64 bytes from 10.0.0.3: icmp\_seq=2 ttl=64 time=2.10 ms |
-| :---- |
+```shell
+laptop:~/.config/wg$ ping 10.0.0.3
+PING 10.0.0.2 (10.0.0.2) 56(84) bytes of data.
+64 bytes from 10.0.0.3: icmp_seq=1 ttl=64 time=2.06 ms
+64 bytes from 10.0.0.3: icmp_seq=2 ttl=64 time=2.10 ms
+```
 
 You can even ssh to jetbot using 10.0.0.2
 
-| laptop:\~/.config/wg$ ssh jetbot@10.0.0.2 |
-| :---- |
+```shell
+laptop:~/.config/wg$ ssh jetbot@10.0.0.2
+```
 
 You can also open jupyter lab running on jetbot from the new IP address [http://10.0.0.2:8888](http://10.0.0.2:8888)
 
 Another check to make sure UDP packets from jetbot can reach the laptop run netcat in UDP listen mode on the port 7410
 
-| laptop:\~/.config/wg$ netcat \-u \-l 10.0.0.3 7410 |
-| :---- |
+```shell
+laptop:~/.config/wg$ netcat -u -l 10.0.0.3 7410
+```
 
 On the jetbot run netcat in UDP send mode and then type hello and press enter
 
-| jetbot@nano-4gb-jp45:\~$ netcat \-u 10.0.0.3 7410 hello |
-| :---- |
+```shell
+jetbot@nano-4gb-jp45:~$ netcat -u 10.0.0.3 7410
+hello
+```
 
 You should see hello on the laptop end. If this does not work, then you have some firewall issues.
 
 Make this wireguard configuration permanent so that this happens every time the robot boots up.
 
-| jetbot@nano-4gb-jp45:\~/.config/wg$ sudo cp wg0.conf /etc/wireguard/wg0.conf jetbot@nano-4gb-jp45:\~/.config/wg$ sudo systemctl enable wg-quick@wg0.service |
-| :---- |
+```
+jetbot@nano-4gb-jp45:~/.config/wg$ sudo cp wg0.conf /etc/wireguard/wg0.conf
+jetbot@nano-4gb-jp45:~/.config/wg$ sudo systemctl enable wg-quick@wg0.service
+```
 
 Repeat the same on the laptop, if you prefer. I prefer to manually start wg on my laptop because it contains the IP address of the jetbot as Endpoint which might change.
 
@@ -287,60 +481,118 @@ Repeat the same on the laptop, if you prefer. I prefer to manually start wg on m
 
 We are going to switch to Eclipse Cyclone DDS 0.7.0 instead of using eProsima Fast DDS. The closest documentation is [here](https://cyclonedds.io/docs/cyclonedds/0.8.2/). CycloneDDS is already installed on the jetbot, you have to install it on the laptop.
 
-| laptop:\~/ece417$ sudo apt update laptop:\~/ece417$ sudo apt install ros-humble-rmw-cyclonedds-cpp |
-| :---- |
+```shell
+laptop:~/ece417$ sudo apt update
+laptop:~/ece417$ sudo apt install ros-humble-rmw-cyclonedds-cpp
+```
 
 To tell ROS that we are going to use a different Ros MiddleWare, use the RMW\_IMPLEMENTATION environment variable,
 
-| laptop:\~/ece417$ export RMW\_IMPLEMENTATION=rmw\_cyclonedds\_cpp |
-| :---- |
+```shell
+laptop:~/ece417$ export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+```
 
 Check all the ROS related environment variables we have learned so far,
 
-| laptop:\~/ece417$ printenv | grep \-E "ROS|RMW\_IMPLEMENTATION" ROS\_VERSION=2 ROS\_PYTHON\_VERSION=3 ROS\_LOCALHOST\_ONLY=0 ROS\_DISTRO=humble RMW\_IMPLEMENTATION=rmw\_cyclonedds\_cpp |
-| :---- |
+```shell
+laptop:~/ece417$ printenv | grep -E "ROS|RMW_IMPLEMENTATION"
+ROS_VERSION=2
+ROS_PYTHON_VERSION=3
+ROS_LOCALHOST_ONLY=0
+ROS_DISTRO=humble
+RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+```
 
 We have to type these commands a lot, so let’s add them to our setup.bash and create an alias for the \`printenv | grep\` command. Create setup.bash with following lines:
 
-| source /opt/ros/humble/setup.bash export RMW\_IMPLEMENTATION=rmw\_cyclonedds\_cpp alias rosenv='printenv | grep \-E "ROS|RMW\_IMPLEMENTATION"' |
-| :---- |
+:::{code} bash
+:filename: setup.bash
+source /opt/ros/humble/setup.bash
+export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+alias rosenv='printenv | grep -E "ROS|RMW_IMPLEMENTATION"'
+:::
 
-| laptop:\~/ece417$ source setup.bash laptop:\~/ece417$ rosenv ROS\_VERSION=2 ROS\_PYTHON\_VERSION=3 ROS\_LOCALHOST\_ONLY=0 ROS\_DISTRO=humble RMW\_IMPLEMENTATION=rmw\_cyclonedds\_cpp |
-| :---- |
+```shell
+laptop:~/ece417$ source setup.bash
+laptop:~/ece417$ rosenv
+ROS_VERSION=2
+ROS_PYTHON_VERSION=3
+ROS_LOCALHOST_ONLY=0
+ROS_DISTRO=humble
+RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+```
 
-Wireguard does not support multicast, so we have to setup initial peer list on the CycloneDDS configuration file. Create a file called cyclonedds.xml
+Wireguard does not support multicast, so we have to setup initial peer list on the CycloneDDS configuration file. Create a file called `cyclonedds.xml`
 
-| \<?xml version="1.0" encoding="UTF-8" ?\> \<CycloneDDS xmlns="https://cdds.io/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://cdds.io/config https://raw.githubusercontent.com/eclipse-cyclonedds/cyclonedds/master/etc/cyclonedds.xsd"\> 	\<Domain id="any"\>   	\<Discovery\>     	\<Peers\>       	\<\!--Peer address="10.0.0.1" \>\</Peer--\>       	\<Peer address="10.0.0.2" \>\</Peer\>       	\<Peer address="10.0.0.3" \>\</Peer\>     	\</Peers\>   	\</Discovery\>     	\<General\>         	 \<Interfaces\>\<NetworkInterface name="wg0"/\>\</Interfaces\>     	\</General\>     	\<Tracing\>         	\<Verbosity\>config\</Verbosity\>         	\<OutputFile\>${HOME}/.ros/cyclonedds.log.${CYCLONEDDS\_PID}\</OutputFile\>     	\</Tracing\> 	\</Domain\> \</CycloneDDS\> |
-| :---- |
+:::{code} xml
+:filename: laptop:~/ece417/cyclonedds.xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<CycloneDDS xmlns="https://cdds.io/config" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="https://cdds.io/config
+                        https://raw.githubusercontent.com/eclipse-cyclonedds/cyclonedds/master/etc/cyclonedds.xsd">
+	<Domain id="any">
+  	<Discovery>
+    	<Peers>
+      	<!--Peer address="10.0.0.1" ></Peer-->
+      	<Peer address="10.0.0.2" ></Peer>
+      	<Peer address="10.0.0.3" ></Peer>
+    	</Peers>
+  	</Discovery>
+    	<General>
+        	 <Interfaces><NetworkInterface name="wg0"/></Interfaces>
+    	</General>
+    	<Tracing>
+        	<Verbosity>config</Verbosity>
+        	<OutputFile>${HOME}/.ros/cyclonedds.log.${CYCLONEDDS_PID}</OutputFile>
+    	</Tracing>
+	</Domain>
+</CycloneDDS>
+:::
 
 We have overridden the Peer list, NetworkInterface and verbosity level for debugging purposes. Tell rmw\_cyclconedds\_cpp middleware about the location of this configuration file using another environment variable
 
-| laptop:\~/ece417$ export CYCLONEDDS\_URI="file://$(pwd)/cyclonedds.xml" |
-| :---- |
+```shell
+laptop:~/ece417$ export CYCLONEDDS_URI="file://$(pwd)/cyclonedds.xml"
+```
 
 Add this to the setup.bash as well
 
-| source /opt/ros/humble/setup.bash export RMW\_IMPLEMENTATION=rmw\_cyclonedds\_cpp export CYCLONEDDS\_URI="file://$(pwd)/cyclonedds.xml" alias rosenv='printenv | grep \-E "ROS|RMW\_IMPLEMENTATION|CYCLONEDDS\_URI"' |
-| :---- |
+
+:::{code} bash
+:filename: setup.bash
+source /opt/ros/humble/setup.bash
+export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+alias rosenv='printenv | grep -E "ROS|RMW_IMPLEMENTATION"'
+export CYCLONEDDS_URI="file://$(pwd)/cyclonedds.xml"
+alias rosenv='printenv | grep -E "ROS|RMW_IMPLEMENTATION|CYCLONEDDS_URI"'
+:::
 
 Copy the setup.bash and cyclonedds.xml files to the jetbot and create a docker container using the ros image that we pulled earlier.
 
-| laptop:\~/ece417$ scp setup.bash cyclonedds.xml jetbot@10.0.0.2:\~/ece417 |
-| :---- |
+```shell
+laptop:~/ece417$ scp setup.bash cyclonedds.xml jetbot@10.0.0.2:~/ece417
+```
 
-| jetbot@nano-4gb-jp45:\~/ece417$ sudo docker container rm ros-humble jetbot@nano-4gb-jp45:\~/ece417$ sudo docker run \--name ros-humble \--network host \-v /home/jetbot:/home/jetbot \-v /etc/passwd:/etc/passwd \-v /etc/shadow:/etc/shadow \-v /etc/group:/etc/group \-u $(id \-u) \--ipc host \--privileged \--workdir /home/jetbot/ece417 \-it dustynv/ros:humble-desktop-l4t-r32.7.1 bash sourcing   /opt/ros/humble/install/setup.bash ROS\_DISTRO humble ROS\_ROOT   /opt/ros/humble jetbot@nano-4gb-jp45:\~/ece417$ source setup.bash |
-| :---- |
+
+```shell
+jetbot@nano-4gb-jp45:~/ece417$ sudo docker container rm ros-humble
+jetbot@nano-4gb-jp45:~/ece417$ sudo docker run --name ros-humble --network host -v /home/jetbot:/home/jetbot -v /etc/passwd:/etc/passwd -v /etc/shadow:/etc/shadow -v /etc/group:/etc/group -u $(id -u) --ipc host --privileged --workdir /home/jetbot/ece417 -it dustynv/ros:humble-desktop-l4t-r32.7.1 bash
+sourcing   /opt/ros/humble/install/setup.bash
+ROS_DISTRO humble
+ROS_ROOT   /opt/ros/humble
+jetbot@nano-4gb-jp45:~/ece417$ source setup.bash
+```
 
 Now ros node talker and listener between jetbot and the laptop must be able to talk to each other.
 
-| laptop:\~/ece417$ ros2 run demo\_nodes\_py listener |
-| :---- |
+```shell
+laptop:~/ece417$ ros2 run demo_nodes_py listener
+```
 
-| jetbot@nano-4gb-jp45:\~/ece417$ ros2 run demo\_nodes\_py talker |
-| :---- |
+```shell
+jetbot@nano-4gb-jp45:~/ece417$ ros2 run demo_nodes_py talker
+```
 
 [^1]:  https://www.wireguard.com/
 
-[image1]: <data:image/png;base64,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>
-
-[image2]: <data:image/png;base64,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>
