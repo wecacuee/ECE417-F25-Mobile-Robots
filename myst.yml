@@ -33,6 +33,7 @@ project:
       - file: "tutorials/00-jetbot/ECE417_ 02.5-Getting to know your Jetbot.md"
       - file: "tutorials/00-jetbot/ECE417_ 03-First ROS nodes, Wireguard VPN and DDS.md"
       - file: "tutorials/00-jetbot/ECE417_ 04-Making your own ROS nodes.md"
+      - file: "tutorials/00-jetbot/ECE417_05-ARTagsAnd3DPoseEstimation.md"
 
 extends:
   - ./sym.yml
