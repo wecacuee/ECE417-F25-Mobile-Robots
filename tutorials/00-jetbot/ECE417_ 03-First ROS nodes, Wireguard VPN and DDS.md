@@ -121,7 +121,8 @@ Here we run the listener executable from the demo\_nodes\_py package. Let it run
 Open a new terminal and run source /opt/ros/humble/setup.bash again, unless you have added it your  \~/.bashrc . You can list all the running nodes with 
 
 ```shell
-laptop:~/ece417$ ros2 node list /listener
+laptop:~/ece417$ ros2 node list
+/listener
 ```
 
 Here /listener is the node name. All names in ROS can form a hierarchy which starts with a forward slash \`/\`. Valid node names can be \`/listeners/student1\`
