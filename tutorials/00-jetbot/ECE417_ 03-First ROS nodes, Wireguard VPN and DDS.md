@@ -578,7 +578,7 @@ laptop:~/ece417$ scp setup.bash cyclonedds.xml jetbot@10.0.0.2:~/ece417
 
 ```shell
 jetbot@nano-4gb-jp45:~/ece417$ sudo docker container rm ros-humble
-jetbot@nano-4gb-jp45:~/ece417$ sudo docker run --name ros-humble --network host -v /home/jetbot:/home/jetbot -v /etc/passwd:/etc/passwd -v /etc/shadow:/etc/shadow -v /etc/group:/etc/group -u $(id -u) --ipc host --privileged --workdir /home/jetbot/ece417 -it dustynv/ros:humble-desktop-l4t-r32.7.1 bash
+jetbot@nano-4gb-jp45:~/ece417$ sudo docker run --name ros-humble --network host -v /home/jetbot:/home/jetbot -v /etc/passwd:/etc/passwd -v /etc/shadow:/etc/shadow -v /etc/group:/etc/group -u $(id -u) --ipc host --privileged --workdir /home/jetbot/ece417 -it dustynv/ros:humble-pytorch-l4t-r32.7.1 bash
 sourcing   /opt/ros/humble/install/setup.bash
 ROS_DISTRO humble
 ROS_ROOT   /opt/ros/humble

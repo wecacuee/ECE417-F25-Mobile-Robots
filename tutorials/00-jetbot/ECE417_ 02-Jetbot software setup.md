@@ -317,13 +317,13 @@ etc.
 ```shell
 jetbot@nano-4gb-jp45:~$ sudo docker pull vdhiman86/ros:humble-pytorch-l4t-r32.7.1
 ..
-Status: Downloaded newer image for vdhiman86/ros:humble-desktop-l4t-r32.7.1            docker.io/vdhiman86/ros:humble-desktop-l4t-r32.7.1 
+Status: Downloaded newer image for vdhiman86/ros:humble-pytorch-l4t-r32.7.1            docker.io/vdhiman86/ros:humble-pytorch-l4t-r32.7.1 
 ```
 
 Once it is downloaded you can run the docker ***image*** to create a running ***container***. Find out about these concepts in a docker tutorial
 
 ```shell
-jetbot@nano-4gb-jp45:~$ sudo docker run --name ros-talker --network host -v /home/jetbot:/home/jetbot -v /etc/passwd:/etc/passwd -v /etc/shadow:/etc/shadow -v /etc/group:/etc/group -u $(id -u) --workdir /home/jetbot -it vdhiman86/ros:humble-desktop-l4t-r32.7.1 bash              
+jetbot@nano-4gb-jp45:~$ sudo docker run --name ros-talker --network host -v /home/jetbot:/home/jetbot -v /etc/passwd:/etc/passwd -v /etc/shadow:/etc/shadow -v /etc/group:/etc/group -u $(id -u) --workdir /home/jetbot -it vdhiman86/ros:humble-pytorch-l4t-r32.7.1 bash              
 sourcing   /opt/ros/humble/install/setup.bash                                        ROS_DISTRO humble                                                                    ROS_ROOT   /opt/ros/humble                                                           jetbot@nano-4gb-jp45:/$ 
 ```
 
@@ -343,7 +343,7 @@ Here’s a description of each option
 
 `-it` : Run the container in an interactive `-i` mode with a terminal attached `-t` . 
 
-`vdhiman86/ros:humble-desktop-l4t-r32.7.1` : is the name of the image that should be run as a container
+`vdhiman86/ros:humble-pytorch-l4t-r32.7.1` : is the name of the image that should be run as a container
 
 `bash` is the first command to run inside the container to keep it running. Once the command completes, the container will stop running. It will still be there and not deleted though.
 
