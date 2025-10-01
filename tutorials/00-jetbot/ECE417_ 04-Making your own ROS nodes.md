@@ -13,7 +13,7 @@ What follows is mostly a copy of ROS beginners tutorial : [https://docs.ros.org/
 Make sure colcon in installed on the laptop. It is already installed in the jetbot docker container.
 
 ```shell
-laptop:~/ece417$ sudo apt install python3-colcon-common-extensions |
+laptop:~/ece417$ sudo apt install python3-colcon-common-extensions
 ```
 
 A ROS workspace is a directory with a particular structure. Commonly there is a `src` subdirectory. Inside that subdirectory is where the source code of ROS packages will be located. Typically the directory starts otherwise empty.
@@ -67,7 +67,7 @@ jetbot@nano-4gb-jp45:~/ece417$
 Pull a new docker image called vdhiman86/ros:humble-pytorch-l4t-r32.7.1.
 
 ```shell
-jetbot@nano-4gb-jp45:~/ece417$ docker pull vdhiman86/ros:humble-pytorch-l4t-r32.7.1 |
+jetbot@nano-4gb-jp45:~/ece417$ docker pull vdhiman86/ros:humble-pytorch-l4t-r32.7.1
 ```
 
 Create a new docker container from this image. Note that some flags have changed since we created the last docker container.
