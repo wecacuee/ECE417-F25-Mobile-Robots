@@ -132,7 +132,8 @@ After sourcing the environment, the compiled packages should be part of ros2 pkg
 
 :::{code} shell
 :caption: Context: on jetbot, inside docker container
-root@nano-4gb-jp45:\~/ece417/ws$ ros2 pkg list | grep \-E 'jetbot\_ros' jetbot\_ros |
+root@nano-4gb-jp45:~/ece417/ws$ ros2 pkg list | grep -E 'jetbot_ros'
+jetbot_ros
 :::
 
 The new `install/setup.bash` is a replacement of /opt/ros/humble/install/setup.bash. Modify the ~/ece417/setup.bash that we created last time, to source install/setup.bash instead of /opt/ros/humble/install/setup.bash. The new setup.bash should look like this:
