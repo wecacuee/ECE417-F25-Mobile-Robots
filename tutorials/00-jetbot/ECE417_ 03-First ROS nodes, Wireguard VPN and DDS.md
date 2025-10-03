@@ -118,7 +118,7 @@ Here we run the listener executable from the demo\_nodes\_py package. Let it run
 
 3. ##### Inspect what nodes are running. 
 
-Open a new terminal and run source /opt/ros/humble/setup.bash again, unless you have added it your  \~/.bashrc . You can list all the running nodes with 
+Open a new terminal and run source /opt/ros/humble/setup.bash again, unless you have added it your  ~/.bashrc . You can list all the running nodes with 
 
 ```shell
 laptop:~/ece417$ ros2 node list
@@ -504,7 +504,7 @@ ROS_DISTRO=humble
 RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 ```
 
-We have to type these commands a lot, so let’s add them to our setup.bash and create an alias for the \`printenv | grep\` command. Create setup.bash with following lines:
+We have to type these commands a lot, so let’s add them to our setup.bash and create an alias for the `printenv | grep` command. Create setup.bash with following lines:
 
 :::{code} bash
 :filename: setup.bash

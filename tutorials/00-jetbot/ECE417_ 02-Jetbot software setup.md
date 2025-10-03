@@ -324,7 +324,10 @@ Once it is downloaded you can run the docker ***image*** to create a running ***
 
 ```shell
 jetbot@nano-4gb-jp45:~$ sudo docker run --name ros-talker --network host -v /home/jetbot:/home/jetbot -v /etc/passwd:/etc/passwd -v /etc/shadow:/etc/shadow -v /etc/group:/etc/group -u $(id -u) --workdir /home/jetbot -it vdhiman86/ros:humble-pytorch-l4t-r32.7.1 bash              
-sourcing   /opt/ros/humble/install/setup.bash                                        ROS_DISTRO humble                                                                    ROS_ROOT   /opt/ros/humble                                                           jetbot@nano-4gb-jp45:/$ 
+sourcing   /opt/ros/humble/install/setup.bash
+ROS_DISTRO humble
+ROS_ROOT   /opt/ros/humble
+jetbot@nano-4gb-jp45:/$ 
 ```
 
 Now you are inside a running docker **container**.
@@ -352,7 +355,7 @@ Here’s a description of each option
 If you exit the container using `CTRL-D` , then container stops and you can rerun the same container using
 
 ```shell
-jetbot@nano-4gb-jp45:~/ece417$ sudo docker container start -i ros-talkera
+jetbot@nano-4gb-jp45:~/ece417$ sudo docker container start -i ros-talker
 sourcing   /opt/ros/humble/install/setup.bash
 ROS_DISTRO humble
 ROS_ROOT   /opt/ros/humble
