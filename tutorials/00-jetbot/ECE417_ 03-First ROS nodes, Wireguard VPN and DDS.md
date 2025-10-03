@@ -104,7 +104,7 @@ laptop:~/ece417$ python3 -c 'import os; print(os.getenv("ROS_DISTRO"))'
 humble
 ```
 
-You have to run source /opt/ros/humble/setup.bash in every terminal once before you use any ros command. You can also add it your \~/.bashrc which contains all the commands that are run at the beginning of every shell session. 
+You have to run source /opt/ros/humble/setup.bash in every terminal once before you use any ros command. You can also add it your ~/.bashrc which contains all the commands that are run at the beginning of every shell session. 
 
 2. ##### Run your first ROS node 
 
@@ -582,6 +582,21 @@ jetbot@nano-4gb-jp45:~/ece417$ sudo docker run --name ros-humble --network host 
 sourcing   /opt/ros/humble/install/setup.bash
 ROS_DISTRO humble
 ROS_ROOT   /opt/ros/humble
+```
+On Jetbot the location of ros setup.bash is different. It is  `/opt/ros/humble/install/setup.bash` instead of `/opt/ros/humble/setup.bash`. Change that in the setup.bash
+
+:::{code} bash
+:filename: jetbot:~/ece417/setup.bash
+source /opt/ros/humble/install/setup.bash
+export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+alias rosenv='printenv | grep -E "ROS|RMW_IMPLEMENTATION"'
+export CYCLONEDDS_URI="file://$(pwd)/cyclonedds.xml"
+alias rosenv='printenv | grep -E "ROS|RMW_IMPLEMENTATION|CYCLONEDDS_URI"'
+:::
+
+Now you should be able to source it.
+
+```
 jetbot@nano-4gb-jp45:~/ece417$ source setup.bash
 ```
 
