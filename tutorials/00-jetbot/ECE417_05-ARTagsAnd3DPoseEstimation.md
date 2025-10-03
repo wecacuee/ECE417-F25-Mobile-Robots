@@ -261,7 +261,7 @@ gscam  jetbot_ros  py_pubsub  ros_aruco_opencv
 Add the set\_property(TARGET ${PROJECT\_NAME} PROPERTY CXX\_STANDARD 14\) line to the `ws/src/ros_aruco_opencv/aruco_opencv/CMakeLists.txt` file
 
 :::{code} diff
-:filename: jetbot:~/ece417/ws/src/aruco_opencv/CMakeLists.txt
+:filename: jetbot:~/ece417/ws/src/ros_aruco_opencv/aruco_opencv/CMakeLists.txt
 --- a/aruco_opencv/CMakeLists.txt
 +++ b/aruco_opencv/CMakeLists.txt
 @@ -25,6 +25,7 @@ target_link_libraries(${PROJECT_NAME}
