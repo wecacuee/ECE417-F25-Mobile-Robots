@@ -307,6 +307,10 @@ jetbot@nano-4gb-jp45:~/.config/wg$ cat private.key
 <this will print jetbot_wireguard_privatekey>
 ```
 
+Do not repeat the above commands. You do not want to generate new private
+keys once they are generated.
+
+
 To get jetbot’s public key, run the following on the jetbot in the `~/.config/wg` directory
 
 ```shell
@@ -427,6 +431,14 @@ peer: tQ39QO5530z2tv73dzVQXVfFbKEEKn1l/lpFXK4aW3w=
   transfer: 212 B received, 156 B sent
   persistent keepalive: every 25 seconds
 ```
+
+Make sure the public key of the laptop is jetbot's peer and vice-versa. If
+your wireguard is not working, it either of the two things (1) the public
+keys do not match, or (2) the endpoint is not correct.
+
+Going forward, the only thing you might need to change is the endpoint if the
+IP address of If you make changes to `wg0.conf`, you will need to restart wireguard using
+`sudo wg-quick down wg0` followed by `sudo wg-quick up ./wg0.conf`.
 
 If everything went right, then you should be able to access jetbot via 10.0.0.2 and laptop via 10.0.0.3. From the laptop try 
 
