@@ -27,6 +27,7 @@ project:
     - file: chapters/01-1901-discrete-planning/Discrete Planning.ipynb
     - file: hw/01-1901-discrete-planning/HW2_BFSDijkstraAndPriorityQueue.ipynb
     - file: chapters/01-1901-discrete-planning/RRT.ipynb
+    - file: chapters/01-1901-discrete-planning/PRM.ipynb
     - file: "tutorials/00-jetbot/ECE417_ 01-Jetbot assembly.md"
       children:
       - file: "tutorials/00-jetbot/ECE417_ 02-Jetbot software setup.md"
