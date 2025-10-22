@@ -38,6 +38,7 @@ project:
     - file: hw/mt1/Midterm1.ipynb
     - file: chapters/02-18-rot/RotationNotes.ipynb
     - file: chapters/02-18-rot/RotationDemo.ipynb
+    - file: chapters/02-18-rot/02-RotationNotes.ipynb
 
 extends:
   - ./sym.yml
