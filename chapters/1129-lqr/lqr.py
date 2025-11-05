@@ -16,7 +16,7 @@ def dare_backpropagation(Qs, Rs, As, Bs):
 
 class RandomController:
     def __init__(self, m, minu, maxu):
-        self.m = m 
+        self.m = m
         self.minu = minu
         self.maxu = maxu
     def control(self, state, state_goal):
