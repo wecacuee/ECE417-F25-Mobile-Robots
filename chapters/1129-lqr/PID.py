@@ -70,7 +70,7 @@ class PIDController:
         self.Kp_alpha = Kp_alpha
         self.Kp_beta = Kp_beta
 
-    def calc_control_command(self, x, x_goal, theta, theta_goal):
+    def calc_control_command(self, t, x, x_goal, theta, theta_goal):
         """
         Returns the control command for the linear and angular velocities as
         well as the distance to goal
@@ -120,8 +120,8 @@ class PIDController:
               if (np.linalg.norm(x_diff) > 0.001) else
               self.Kp_beta * dest_angle_err)
         return np.array([v, w])
-    def control(self, state, state_goal):
-        return self.calc_control_command(state[:2], state_goal[:2], state[2],
+    def control(self, t, state, state_goal):
+        return self.calc_control_command(t, state[:2], state_goal[:2], state[2],
                                          state_goal[2])
 
 def rotmat2D(theta):
@@ -258,7 +258,7 @@ class ProjectSingleIntegratorToUnicycle:
 def main():
     # simulation parameters
     dt = 0.01
-    pid_controller = PIDController(9, 15, 3)
+    pid_controller = PIDController(15, 15, 3)
     if iLQRController is not None:
         T = 100
         n = 3
@@ -282,7 +282,7 @@ def main():
             T = T,
             N = 100,
             init_controller = pid_controller)
-    controller = ilqr_controller
+    controller = pid_controller
 
     for i in range(5):
         x_start = 20 * random()
