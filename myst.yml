@@ -39,6 +39,7 @@ project:
     - file: chapters/02-18-rot/RotationNotes.ipynb
     - file: chapters/02-18-rot/RotationDemo.ipynb
     - file: chapters/02-18-rot/02-RotationNotes.ipynb
+    - file: "chapters/09-project/ECE417 Project scope and instructions.ipynb"
     - file: chapters/11-05-fwd-kinematics/LabVoltForwardKinematics.ipynb
     - file: chapters/11-05-fwd-kinematics/LabVoltInverseKinematics.ipynb
 
