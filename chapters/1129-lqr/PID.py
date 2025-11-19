@@ -282,7 +282,7 @@ def main():
             T = T,
             N = 100,
             init_controller = pid_controller)
-    controller = pid_controller
+    controller = lqr_controller
 
     for i in range(5):
         x_start = 20 * random()
