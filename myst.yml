@@ -42,6 +42,7 @@ project:
     - file: "chapters/09-project/ECE417 Project scope and instructions.ipynb"
     - file: chapters/11-05-fwd-kinematics/LabVoltForwardKinematics.ipynb
     - file: chapters/11-05-fwd-kinematics/LabVoltInverseKinematics.ipynb
+    - file: chapters/12-01-kf/Simple_Localization_Problem.ipynb
 
 extends:
   - ./sym.yml
